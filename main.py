@@ -3,9 +3,19 @@
 
 Реализация итераторов и генераторов для работы с вложенными списками.
 Включает как простые, так и рекурсивные решения для многоуровневой вложенности.
+
+Изученные концепции:
+- Итераторы и протокол итерации
+- Генераторы и ключевое слово yield
+- Генераторные выражения
+- yield from для делегирования
+- itertools для работы с итераторами
+- Контекстные менеджеры с генераторами
 """
 
 import types
+import itertools
+from contextlib import contextmanager
 
 
 class FlatIterator:
@@ -93,6 +103,131 @@ def recursive_flat_generator(list_of_list):
             yield from recursive_flat_generator(item)
         else:
             yield item
+
+
+# ДОПОЛНИТЕЛЬНЫЕ ПРИМЕРЫ ИЗУЧЕННЫХ КОНЦЕПЦИЙ
+
+def generator_expressions_demo():
+    """
+    Демонстрация генераторных выражений - компактный способ создания генераторов.
+    Изученная концепция: Generator Expressions
+    """
+    print("\n=== ГЕНЕРАТОРНЫЕ ВЫРАЖЕНИЯ ===")
+    
+    # Обычный генератор
+    def squares_generator(n):
+        for i in range(n):
+            yield i ** 2
+    
+    # Генераторное выражение (аналогично)
+    squares_gen_expr = (i ** 2 for i in range(5))
+    
+    print("Обычный генератор:", list(squares_generator(5)))
+    print("Генераторное выражение:", list(squares_gen_expr))
+    
+    # Генераторное выражение с условием
+    even_squares = (i ** 2 for i in range(10) if i % 2 == 0)
+    print("Четные квадраты:", list(even_squares))
+
+
+def itertools_demo():
+    """
+    Демонстрация работы с модулем itertools.
+    Изученная концепция: itertools для работы с итераторами
+    """
+    print("\n=== ITERTOOLS ДЕМОНСТРАЦИЯ ===")
+    
+    # chain - объединение итераторов
+    list1 = [1, 2, 3]
+    list2 = [4, 5, 6]
+    chained = itertools.chain(list1, list2)
+    print("chain:", list(chained))
+    
+    # cycle - бесконечный цикл
+    cycle_iter = itertools.cycle(['A', 'B', 'C'])
+    print("cycle (первые 7):", [next(cycle_iter) for _ in range(7)])
+    
+    # islice - срез итератора
+    numbers = range(20)
+    sliced = itertools.islice(numbers, 5, 15, 2)
+    print("islice:", list(sliced))
+    
+    # combinations - комбинации
+    items = ['a', 'b', 'c']
+    combos = itertools.combinations(items, 2)
+    print("combinations:", list(combos))
+
+
+@contextmanager
+def generator_context_manager():
+    """
+    Контекстный менеджер с использованием генератора.
+    Изученная концепция: Context Managers с генераторами
+    """
+    print("Начало работы с контекстом")
+    try:
+        yield "Контекст активен"
+    finally:
+        print("Завершение работы с контекстом")
+
+
+def advanced_yield_demo():
+    """
+    Демонстрация продвинутых возможностей yield.
+    Изученная концепция: Продвинутые возможности yield
+    """
+    print("\n=== ПРОДВИНУТЫЕ ВОЗМОЖНОСТИ YIELD ===")
+    
+    def data_processor(data):
+        """Генератор с отправкой данных обратно"""
+        result = []
+        for item in data:
+            # Получаем данные от вызывающего кода
+            feedback = yield item
+            if feedback:
+                result.append(feedback)
+        return result
+    
+    # Использование send()
+    processor = data_processor([1, 2, 3, 4, 5])
+    print("Первое значение:", next(processor))
+    print("Отправка 'processed' и получение следующего:", processor.send("processed"))
+    print("Следующее значение:", next(processor))
+    
+    # Генератор с throw()
+    def error_generator():
+        try:
+            yield 1
+            yield 2
+        except ValueError as e:
+            print(f"Поймано исключение: {e}")
+            yield "Обработано"
+    
+    gen = error_generator()
+    print("Первое значение:", next(gen))
+    print("Бросаем исключение:", gen.throw(ValueError, "Тестовая ошибка"))
+
+
+def memory_efficiency_demo():
+    """
+    Демонстрация эффективности использования памяти генераторами.
+    Изученная концепция: Эффективность памяти генераторов
+    """
+    print("\n=== ЭФФЕКТИВНОСТЬ ПАМЯТИ ===")
+    
+    import sys
+    
+    # Список - занимает всю память сразу
+    big_list = [i for i in range(1000)]
+    list_size = sys.getsizeof(big_list)
+    
+    # Генератор - занимает минимум памяти
+    big_generator = (i for i in range(1000))
+    gen_size = sys.getsizeof(big_generator)
+    
+    print(f"Размер списка: {list_size} байт")
+    print(f"Размер генератора: {gen_size} байт")
+    print(f"Экономия памяти: {list_size - gen_size} байт")
 
 
 def test_1():
@@ -219,6 +354,18 @@ def demonstrate_usage():
         if i >= 4:  # Показываем только первые 5 элементов
             print("  ...")
             break
+    
+    # Дополнительные демонстрации изученных концепций
+    generator_expressions_demo()
+    itertools_demo()
+    advanced_yield_demo()
+    memory_efficiency_demo()
+    
+    # Демонстрация контекстного менеджера
+    print("\n=== КОНТЕКСТНЫЙ МЕНЕДЖЕР ===")
+    with generator_context_manager() as context:
+        print(f"Состояние: {context}")
+        print("Работаем внутри контекста...")
 
 
 if __name__ == '__main__':

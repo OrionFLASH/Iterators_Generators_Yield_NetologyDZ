@@ -57,21 +57,45 @@ Iterators_Generators_Yield_NetologyDZ/
    - Протокол итерации (`__iter__`, `__next__`)
    - Обработка исключения `StopIteration`
    - Состояние итератора
+   - Создание пользовательских итераторов
 
 2. **Генераторы:**
    - Ключевое слово `yield`
    - Ленивые вычисления
    - `yield from` для делегирования
+   - Генераторные выражения `(x for x in iterable)`
+   - Методы `send()`, `throw()`, `close()`
 
-3. **Рекурсия:**
+3. **Генераторные выражения:**
+   - Компактный синтаксис создания генераторов
+   - Условные выражения в генераторах
+   - Эффективность памяти
+
+4. **itertools модуль:**
+   - `chain()` - объединение итераторов
+   - `cycle()` - бесконечные циклы
+   - `islice()` - срезы итераторов
+   - `combinations()` - комбинации элементов
+
+5. **Контекстные менеджеры:**
+   - `@contextmanager` декоратор
+   - Генераторы как контекстные менеджеры
+   - `try/finally` блоки в генераторах
+
+6. **Рекурсия:**
    - Рекурсивные алгоритмы
    - Обработка вложенных структур данных
    - Проверка типов с помощью `isinstance()`
 
-4. **Тестирование:**
+7. **Тестирование:**
    - Модуль `types` для проверки типа генератора
    - Утверждения `assert` для валидации
    - Функция `zip()` для сравнения результатов
+
+8. **Эффективность памяти:**
+   - Сравнение списков и генераторов
+   - `sys.getsizeof()` для измерения памяти
+   - Ленивая загрузка данных
 
 ### Алгоритмическая сложность:
 
@@ -107,25 +131,86 @@ python main.py
 
 ## Примеры использования
 
-### Простой итератор:
+### Основные задания:
+
+**Простой итератор:**
 ```python
 list_of_lists = [['a', 'b'], ['c', 'd']]
 for item in FlatIterator(list_of_lists):
     print(item)  # Выведет: a, b, c, d
 ```
 
-### Простой генератор:
+**Простой генератор:**
 ```python
 list_of_lists = [['a', 'b'], ['c', 'd']]
 for item in flat_generator(list_of_lists):
     print(item)  # Выведет: a, b, c, d
 ```
 
-### Рекурсивные версии:
+**Рекурсивные версии:**
 ```python
 complex_list = [[['a'], ['b', 'c']], ['d', [['e']]]]
 for item in RecursiveFlatIterator(complex_list):
     print(item)  # Выведет: a, b, c, d, e
+```
+
+### Дополнительные изученные концепции:
+
+**Генераторные выражения:**
+```python
+# Обычный генератор
+def squares(n):
+    for i in range(n):
+        yield i ** 2
+
+# Генераторное выражение (аналогично)
+squares_gen = (i ** 2 for i in range(5))
+
+# С условием
+even_squares = (i ** 2 for i in range(10) if i % 2 == 0)
+```
+
+**itertools модуль:**
+```python
+import itertools
+
+# Объединение итераторов
+chained = itertools.chain([1, 2], [3, 4])
+
+# Бесконечный цикл
+cycle_iter = itertools.cycle(['A', 'B', 'C'])
+
+# Срез итератора
+sliced = itertools.islice(range(20), 5, 15, 2)
+```
+
+**Контекстные менеджеры с генераторами:**
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def my_context():
+    print("Начало")
+    try:
+        yield "Контекст активен"
+    finally:
+        print("Конец")
+
+with my_context() as ctx:
+    print(f"Работаем: {ctx}")
+```
+
+**Продвинутые возможности yield:**
+```python
+def data_processor(data):
+    for item in data:
+        feedback = yield item  # Получаем данные от вызывающего кода
+        if feedback:
+            print(f"Обработано: {feedback}")
+
+processor = data_processor([1, 2, 3])
+next(processor)  # Получаем 1
+processor.send("processed")  # Отправляем обратно
 ```
 
 ## Результаты тестирования
